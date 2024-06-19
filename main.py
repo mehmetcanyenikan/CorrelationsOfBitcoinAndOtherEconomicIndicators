@@ -72,43 +72,46 @@ file_names = [
 ]
 
 
-correlation_related_positive = []
-correlation_related_negative = []
-
-correlation_notrelated_positive = []
-correlation_notrelated_negative = []
+correlation_related = {
+    "positive":[],
+    "negative":[]
+}
+correlation_notrelated = {
+    "positive":[],
+    "negative":[]
+}
 
 for file_name in file_names:
     try:
         l1 = dataRead(path,file_name)
-        a = l1.mergedFunc(l1.getDF())
+        a = l1.mergedFunc(l1.DF)
         a["Price_x"] = a["Price_x"].apply(l1.remove_comma_and_convert)
         print(file_name)
         print("Normality Test", l1.normalityTest(a))
         print("Correlation", l1.correlation(a)[1])
         if l1.correlation(a)[1] < 0.05 and l1.correlation(a)[0]>0:
-            correlation_related_positive.append(file_name)
+            correlation_related["positive"].append((file_name, l1.correlation(a)[0], l1.correlation(a)[1]))
         elif l1.correlation(a)[1] < 0.05 and l1.correlation(a)[0]<0:
-            correlation_related_negative.append(file_name)
+            correlation_related["negative"].append((file_name, l1.correlation(a)[0], l1.correlation(a)[1]))
             
     except ValueError:
         l1 = dataRead(path,file_name)
-        a = l1.mergedFunc(l1.getDF())
+        a = l1.mergedFunc(l1.DF)
         a["Price_x"] = a["Price_x"].apply(l1.remove_comma_and_convert)
         a["Price_y"] = a["Price_y"].apply(l1.remove_comma_and_convert)
         print(file_name)
         print("Normality Test", l1.normalityTest(a))
         print("Correlation", l1.correlation(a)[1])
         if l1.correlation(a)[1] > 0.05 and l1.correlation(a)[0] >0:
-            correlation_notrelated_positive.append(file_name)
+            correlation_notrelated["positive"].append((file_name, l1.correlation(a)[0], l1.correlation(a)[1]))
         elif l1.correlation(a)[1] > 0.05 and l1.correlation(a)[0] <0:
-            correlation_notrelated_negative.append(file_name)
+            correlation_notrelated["negative"].append((file_name, l1.correlation(a)[0], l1.correlation(a)[1]))
 
 
-print("related positive:", correlation_related_positive)
-print("related negative:", correlation_related_negative)
+print("related positive:", correlation_related["positive"])
+print("related negative:", correlation_related["negative"])
 
-print("not related", correlation_notrelated_positive)
-print("not related", correlation_notrelated_negative)
+print("not related", correlation_notrelated["positive"])
+print("not related", correlation_notrelated["negative"])
 
 

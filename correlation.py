@@ -10,12 +10,12 @@ class dataRead:
         self.path = path
         self.file = file
         self.bitcoinDF = pd.read_csv("C:/Users/Can/Desktop/myHugeProject/data/BTC_USD Bitfinex Historical Data.csv")
-
-    def getDF(self):
+    @property
+    def DF(self):
         self.x = pd.read_csv(self.path+self.file)
         return self.x
-    
-    def setDF(self,files):
+    @DF.setter
+    def DF(self,files):
         self.files = files
     
     def mergedFunc(self,x):
