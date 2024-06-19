@@ -1,12 +1,6 @@
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy.stats import shapiro 
-from scipy import stats
-
+from correlation import dataRead
 
 path = "C:/Users/Can/Desktop/myHugeProject/data/"
-file1 = "EUR_USD Historical Data.csv"
 file_names = [
     "AEX Futures Historical Data.csv",
     "AUD_USD Historical Data.csv",
@@ -76,35 +70,14 @@ file_names = [
     "USD_JPY Historical Data.csv",
     "WIG20 Futures Historical Data.csv"
 ]
-class dataRead:
-    def __init__(self,path,file):
-        self.path = path
-        self.file = file
-        self.bitcoinDF = pd.read_csv("C:/Users/Can/Desktop/myHugeProject/data/BTC_USD Bitfinex Historical Data.csv")
 
-    def getDF(self):
-        self.x = pd.read_csv(self.path+self.file)
-        return self.x
-    
-    def setDF(self,files):
-        self.files = files
-    
-    def mergedFunc(self,x):
-        self.merged_df = pd.merge(self.bitcoinDF, self.x, on='Date')
-        return self.merged_df
 
-    def remove_comma_and_convert(self,value):
-        value = value.replace(',', '')
-        return float(value)
-    
-    def normalityTest(self,k):
-        return shapiro(k["Price_y"]).pvalue
+correlation_related_positive = []
+correlation_related_negative = []
 
-    def correlation(self,k):
-        return stats.spearmanr(k["Price_y"], k["Price_x"]).pvalue
+correlation_notrelated_positive = []
+correlation_notrelated_negative = []
 
-correlation_related = []
-correlation_notrelated = []
 for file_name in file_names:
     try:
         l1 = dataRead(path,file_name)
@@ -112,9 +85,11 @@ for file_name in file_names:
         a["Price_x"] = a["Price_x"].apply(l1.remove_comma_and_convert)
         print(file_name)
         print("Normality Test", l1.normalityTest(a))
-        print("Correlation", l1.correlation(a))
-        if l1.correlation(a) < 0.05:
-            correlation_related.append(file_name)
+        print("Correlation", l1.correlation(a)[1])
+        if l1.correlation(a)[1] < 0.05 and l1.correlation(a)[0]>0:
+            correlation_related_positive.append(file_name)
+        elif l1.correlation(a)[1] < 0.05 and l1.correlation(a)[0]<0:
+            correlation_related_negative.append(file_name)
             
     except ValueError:
         l1 = dataRead(path,file_name)
@@ -123,9 +98,17 @@ for file_name in file_names:
         a["Price_y"] = a["Price_y"].apply(l1.remove_comma_and_convert)
         print(file_name)
         print("Normality Test", l1.normalityTest(a))
-        print("Correlation", l1.correlation(a))
-        if l1.correlation(a) > 0.05:
-            correlation_notrelated.append(file_name)
-print("related:", correlation_related)
-print("not related", correlation_notrelated)
+        print("Correlation", l1.correlation(a)[1])
+        if l1.correlation(a)[1] > 0.05 and l1.correlation(a)[0] >0:
+            correlation_notrelated_positive.append(file_name)
+        elif l1.correlation(a)[1] > 0.05 and l1.correlation(a)[0] <0:
+            correlation_notrelated_negative.append(file_name)
+
+
+print("related positive:", correlation_related_positive)
+print("related negative:", correlation_related_negative)
+
+print("not related", correlation_notrelated_positive)
+print("not related", correlation_notrelated_negative)
+
 
