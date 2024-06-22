@@ -1,35 +1,32 @@
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from scipy.stats import shapiro 
+from scipy.stats import shapiro
 from scipy import stats
+from statsmodels.tsa.stattools import adfuller
 
 
-class dataRead:
-    def __init__(self,path,file):
+class data_read:
+
+    def __init__(self, path, file):
         self.path = path
         self.file = file
-        self.bitcoinDF = pd.read_csv("C:/Users/Can/Desktop/myHugeProject/data/BTC_USD Bitfinex Historical Data.csv")
+        self.bitcoin_df = pd.read_csv("C:/Users/Can/Desktop/CorrelationOfBitcoinAndOtherEconomicIndicators/data/Bitcoin Historical Data.csv")
+        self.other_df = pd.read_csv(self.path + self.file)
+
     @property
-    def DF(self):
-        self.x = pd.read_csv(self.path+self.file)
-        return self.x
-    @DF.setter
-    def DF(self,files):
-        self.files = files
-    
-    def mergedFunc(self,x):
-        self.merged_df = pd.merge(self.bitcoinDF, self.x, on='Date')
+    def merged_func(self):
+        self.merged_df = pd.merge(self.bitcoin_df, self.other_df, on='Date')
         return self.merged_df
 
-    def remove_comma_and_convert(self,value):
+    def remove_comma_and_convert(self, value):
         value = value.replace(',', '')
         return float(value)
-    
-    def normalityTest(self,k):
+
+    def normality_test(self, k):
         return shapiro(k["Price_y"]).pvalue
 
-    def correlation(self,k):
+    def correlation(self, k):
         correlation, p_value = stats.spearmanr(k["Price_x"], k["Price_y"])
-        return correlation,p_value
-        # return stats.spearmanr(k["Price_y"], k["Price_x"]).pvalue
+        return correlation, p_value
+
+    def augmented_dickey_fuller(self, k):
+        return print(adfuller(k))
