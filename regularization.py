@@ -5,7 +5,7 @@ import pandas as pd
 class merged(data_read):
     def __init__(self, file_path, file_name):
         super().__init__(file_path, file_name)
-        self.bitcoin_df = pd.read_csv(file_path+'BTC_USD Bitfinex Historical Data.csv')
+        self.bitcoin_df = pd.read_csv(file_path+'Bitcoin Historical Data.csv')
 
     @property
     def merged_func(self):
